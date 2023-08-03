@@ -36,3 +36,11 @@ export function findAllTask() {
 export function findTaskById(_id: string) {
   return Task.findById(_id).populate("assignedTo", "name email");
 }
+
+export function deleteUserTask(_id: string) {
+  return Task.deleteMany({ assignedTo: _id });
+}
+
+export function deleteTaskById(_id: string){
+    return Task.findByIdAndDelete(_id);
+}

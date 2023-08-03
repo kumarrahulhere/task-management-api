@@ -4,6 +4,7 @@ import { validateData } from "../../validation/common.validation";
 import { findUserById } from "../../service/user.service";
 import {
   createTask,
+  deleteTaskById,
   findAllTask,
   findTaskById,
 } from "../../service/task.service";
@@ -64,4 +65,20 @@ export const changeTaskStatus = async (req: Request, res: Response) => {
   task!.state = req.body.state;
   task?.save();
   return res.sendRes(200, "Task state updated", { task });
+};
+
+export const deleteTask = async (req: Request, res: Response) => {
+  let validateSchema = {
+    id: Joi.string().required(),
+  };
+  const error = validateData(validateSchema, { id: req.params.id });
+  if (error) {
+    return res.sendRes(400, "Invalid input!", error);
+  }
+  let task = await findTaskById(req.params.id);
+  if (!task) return res.sendRes(400, "Task not exist");
+
+  task.deleteOne();
+  // await deleteTaskById(req.params.id);
+  return res.sendRes(200, "Task deleted");
 };

@@ -7,6 +7,7 @@ import {
 import {
   changeTaskStatus,
   createUserTask,
+  deleteTask,
   getTask,
   getTasks,
 } from "../controller/admin/task.controller";
@@ -14,12 +15,13 @@ import {
 const router = express.Router();
 
 router.get("/users", getUsers);
-router.delete("/user", deleteUser);
-router.post("/toggle-user-verification", toggleUserVerification);
+router.delete("/user/:id", deleteUser);
+router.put("/toggle-user-verification", toggleUserVerification);
 
 router.get("/tasks", getTasks);
-router.post("/task", createUserTask);
 router.get("/task/:id", getTask);
-router.post("/task-status", changeTaskStatus);
+router.post("/task", createUserTask);
+router.delete("/task/:id", deleteTask);
+router.put("/task-state", changeTaskStatus);
 
 export default router;
