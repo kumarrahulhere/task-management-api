@@ -30,8 +30,9 @@ export const userSchema = new Schema<UserInterface>({
     required: true,
     min: 8,
     max: 16,
+    select: false,
   },
-  salt: { type: String },
+  salt: { type: String, select: false },
   created: { type: Date, default: Date.now() },
 });
 

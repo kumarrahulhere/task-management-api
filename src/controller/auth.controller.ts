@@ -21,7 +21,9 @@ export const login = async (req: Request, res: Response) => {
     return res.sendRes(400, "Invalid credential!", error);
   }
 
-  let user = await findUser({ email: req.body.email });
+  let user = await findUser({ email: req.body.email }).select(
+    "+salt +password"
+  );
   if (!user) return res.sendRes(400, "Please enter correct email");
   const token = Jwt.sign(
     { email: user.email, _id: user._id },
@@ -31,7 +33,7 @@ export const login = async (req: Request, res: Response) => {
     // send verification code
     try {
       await sendVerificationEmail(user.email!, token);
-      return res.sendRes(202, "Please verify your account.", {
+      return res.sendRes(200, "Please verify your account.", {
         user,
       });
     } catch (error) {
@@ -43,7 +45,9 @@ export const login = async (req: Request, res: Response) => {
   if (expectedHash !== user.password) {
     return res.sendRes(403, "Please enter correct password");
   }
-
+  user = user.toObject();
+  delete user.salt;
+  delete user.password;
   return res.sendRes(200, "User logged in", { user, token });
 };
 
@@ -62,7 +66,9 @@ export const register = async (req: Request, res: Response) => {
   }
 
   // check user already in database
-  let existingUser = await findUser({ email: req.body.email });
+  let existingUser = await findUser({ email: req.body.email }).select(
+    "+salt +password"
+  );
   if (existingUser && existingUser.verified) {
     return res.sendRes(400, "User already exist !");
   }
@@ -88,8 +94,11 @@ export const register = async (req: Request, res: Response) => {
       process.env.JWT_SECRET_KEY!
     );
     await sendVerificationEmail(existingUser.email!, token);
+    let user = existingUser.toObject();
+    delete user.salt;
+    delete user.password;
     return res.sendRes(200, "Please verify your account. Check you email.", {
-      user: existingUser,
+      user,
     });
   } catch (error) {
     return res.sendRes(400, "Not able to register user");

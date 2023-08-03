@@ -20,7 +20,7 @@ export default function (app: Application): void {
   app.use(sendResMiddleware);
   app.use("/api/v1", authRoutes);
   app.use(
-    "/api/v1",
+    "/api/v1/user",
     [passport.authenticate("jwt", { session: false }), authUser],
     indexRoutes
   );
